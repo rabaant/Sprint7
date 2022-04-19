@@ -23,7 +23,7 @@
           <b-button @click="sortAsc(budgetList)">Ordenar alfabéticamente (nombre)</b-button>
           <b-button @click="sortDate(budgetList)">Ordenar por fecha</b-button>
           <b-button @click="restart(budgetList)">Reiniciar orden</b-button>
-          <b-input type="text" v-model="text" v-on:keyup.enter="find(budgetList,text)" placeholder="introduce el texto a buscar y pulsa enter">{{text}}</b-input>
+          <b-input type="text" v-model="text" v-on:keyup.enter="find(budgetList,text)" placeholder="introduce el texto a buscar como nombre del presupuesto y pulsa enter">{{text}}</b-input>
           
           <!--Si hay objetos en el array de búsqueda manda éste a ListComp y si no usa el array completo -->
           <ListComp v-if="budgetSearch.length==0" :budgets="budgetList"/>
@@ -55,13 +55,14 @@ export default {
       budgetName:'',
       clientName:'',
       budgetList:[],
+      budgetSearch:[],
       web:false,
       seo:false,
       sem:false,
       numPag:1,
       numLang:1,
       text:'',
-      budgetSearch:[],
+     
     }
   },
   computed:{
@@ -75,6 +76,13 @@ export default {
       return (this.arrTotal.reduce((x,y)=>parseFloat(x)+parseFloat(y),0))+this.sumaPanelWeb
     }
   },
+
+  mounted(){
+      if(localStorage.getItem('budgetList')){
+            this.budgetList=JSON.parse(localStorage.getItem('budgetList'));
+          }
+  },
+
   methods:{
     //recogemos la variable que viene de PanellComp
     sumaTotal(suma,numPag,numLang){
@@ -98,7 +106,11 @@ export default {
     //guardamos en un array el presupuesto como un objeto 
     save(){
       if(this.web == true || this.seo == true || this.sem == true){
-
+          if(this.web != true) {
+            this.numPag=0;
+            this.numLang=0;
+          }
+         
          this.budgetList.push({clientName: this.clientName, 
                             budgetName: this.budgetName, 
                             web: this.web, 
@@ -108,6 +120,8 @@ export default {
                             lang:this.numLang,
                             total: this.total,
                             date:Date.now()});
+        const parsed = JSON.stringify(this.budgetList);
+        localStorage.setItem('budgetList', parsed);
       }else{
         alert("Tienes que marcar un servicio");
       }
