@@ -32,6 +32,7 @@
 <script>
 export default {
   name: 'PanellComp',
+  props:['resetPagLang'],
   data(){
       return {
           numPag:1,
@@ -49,6 +50,10 @@ export default {
         //mandamos el dato que recogeremos en HomeComp
          this.$emit('sumPagLang',suma,this.numPag,this.numLang);
          return suma;           
+      },
+      reset:function(){
+        if (this.resetPagLang != false)
+          return(this.numPag=1, this.numLang=1) ;
       }    
   },
   watch:{
